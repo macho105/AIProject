@@ -13,11 +13,11 @@ namespace AI
 		virtual ~HasFather() = default;
 		HasFather(std::shared_ptr<T> father = nullptr) : _father(father) {};
 
-		void SetFather(std::shared_ptr<T> father)
+		virtual void SetFather(std::shared_ptr<T> father)
 		{
 			_father = father;
 		}
-		std::shared_ptr<T> GetFather()
+		virtual std::shared_ptr<T> GetFather()
 		{
 			return _father;
 		}

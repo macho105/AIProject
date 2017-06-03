@@ -14,7 +14,7 @@ namespace AI
 		kSymbolic,
 		kNone
 	};
-	class Attribute : HasFather<Object>
+	class Attribute : public HasFather<Object>
 	{
 	private:
 		std::string _raw;
@@ -23,7 +23,8 @@ namespace AI
 		int* _intVal;
 		int _index;
 	public:
-
+		bool operator==(int index) const { return index == _index; }
+		int GetIndex() const { return _index; }
 		Attribute(std::string val,int index,std::shared_ptr<AI::Object> father = nullptr, AtributeType type = kNone)
 			: HasFather<AI::Object>(father), _raw(val)
 			, _type(type)	, _fVal(nullptr)
@@ -87,5 +88,14 @@ namespace AI
 				[](Attribute first, Attribute seccond) {return first.GetAsString() == seccond.GetAsString(); }), ret.end());
 			return ret;
 		}
+		static Array<Attribute> GetUniqueIndexes(Array<Attribute> ret)
+		{
+			std::sort(ret.begin(), ret.end(), [](Attribute first, Attribute second) {return first.GetIndex() < second.GetIndex(); });
+			ret.erase(std::unique(ret.begin(), ret.end(),
+				[](Attribute first, Attribute seccond) {return first.GetIndex() == seccond.GetIndex(); }), ret.end());
+
+			return ret;
+		}
+
 	};
 }

@@ -11,7 +11,7 @@ namespace AI
 	private:
 		HasFile *_system, *_descriptor;
 	public:
-		DecisiveSystemReader(std::string systemPath, std::string descriptorPath) 
+		DecisiveSystemReader(std::string systemPath, std::string descriptorPath = "") 
 			: _system(new HasFile(systemPath))
 		{
 			if (descriptorPath.size())

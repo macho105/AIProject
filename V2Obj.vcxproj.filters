@@ -27,10 +27,10 @@
     <ClCompile Include="Object.cpp">
       <Filter>Header Files\AI</Filter>
     </ClCompile>
-    <ClCompile Include="InformativeSystem.cpp">
+    <ClCompile Include="DecisiveSystem.cpp">
       <Filter>Header Files\AI</Filter>
     </ClCompile>
-    <ClCompile Include="DecisiveSystem.cpp">
+    <ClCompile Include="Rule.cpp">
       <Filter>Header Files\AI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,9 +47,6 @@
     <ClInclude Include="HasFather.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
-    <ClInclude Include="InformativeSystem.h">
-      <Filter>Header Files\AI</Filter>
-    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
@@ -58,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="DecisiveSystemReader.h">
       <Filter>Header Files\File</Filter>
+    </ClInclude>
+    <ClInclude Include="Rule.h">
+      <Filter>Header Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

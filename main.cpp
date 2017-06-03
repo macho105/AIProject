@@ -8,7 +8,8 @@
 #define AUSTRALIAN_SYSTEM_FILENAME	"C:\\australian.txt"
 #define AUSTRALIAN_TYPES_FILENAME	"C:\\australian-type.txt"
 
-#define DECISIVE_SYSTEM_FILENAME "C:\\SystemDecyzyjny.txt"
+#define DECISIVE_SYSTEM_FILENAME	"C:\\SystemDecyzyjny.txt"
+#define LEM2_SYSTEM_FILENAME		"C:\\LEM2System.txt"
 
 void DisplayExercise(std::string zestaw, std::string pkt = "")
 {
@@ -228,7 +229,7 @@ void Zestaw2()
 			}
 			indexes = toRet;
 		};
-		auto colContains2 = [&](AI::Array2D<int>& indexes, int colIndex)
+		auto colContains = [&](AI::Array2D<int>& indexes, int colIndex)
 		{
 			auto i = 0;
 			AI::Array<AI::Attribute> ret;
@@ -295,7 +296,7 @@ void Zestaw2()
 				AI::Array<AI::Attribute> buff;
 
 				applyRulesToComb(indexes,ret,i);
-				colContains2(indexes, i);
+				colContains(indexes, i);
 				
 
 				// Printing:
@@ -309,7 +310,7 @@ void Zestaw2()
 							printf("(a%i=%i)", vec[d] + 1, sys.GetObjectAtIndex(i)->At(vec[d]).GetAsInt());
 							if (d+1 < vec.size())
 							{
-								printf("v");
+								printf("&");
 							}
 						}
 						printf("=>%i\n", sys.GetDecision(i));
@@ -342,9 +343,111 @@ void Zestaw2()
 
 		return;
 	};
-	//Pkt1();
-	Pkt2();
+	auto Pkt3 = [&]()
+	{
+		AI::DecisiveSystemReader lemReader(LEM2_SYSTEM_FILENAME);
+		auto lemSystem = lemReader.ReadDecisiveSystem();
 
+		auto uniqDecisions = lemSystem.GetUniqueDecisions();
+
+		auto findMostFrequent = [&](std::vector<int> indexes)->std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>>
+		{
+			std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> ret;
+			std::vector<std::pair<AI::Attribute,/*frequency:*/int>> toAdd;
+			for(auto i = 0; i < lemSystem.GetObjectAtIndex(0)->GetSize(); i++)
+			{
+				auto uniques = lemSystem.GetUniqueAttributes(i);
+				for(auto element : uniques)
+				{
+					auto col = lemSystem.GetAttributesAtIndex(i);
+					auto count = 0;
+					for (auto el : col)
+						if (el.GetAsInt() == element.GetAsInt() && 
+							el.GetFather()->GetDecision() == element.GetFather()->GetDecision())
+							count++;
+					
+					if(indexes.empty() ||
+						std::find(std::begin(indexes),
+							std::end(indexes),
+							element.GetFather()->GetIndex()) != std::end(indexes))
+					toAdd.push_back(std::make_pair(element, count));
+				}
+			}
+			std::sort(std::begin(toAdd), std::end(toAdd), [](std::pair<AI::Attribute,/*frequency:*/int> first,
+				std::pair<AI::Attribute,/*frequency:*/int> second)
+			{
+				if(first.second == second.second)
+				{
+					if (first.first.GetFather()->GetIndex() == second.first.GetFather()->GetIndex())
+					{
+						return first.first.GetIndex() > second.first.GetIndex();
+					}
+					else
+						return first.first.GetFather()->GetIndex() > second.first.GetFather()->GetIndex();
+				}
+				else
+					return first.second > second.second;
+			});
+			for (auto en : toAdd)
+				ret[en.first.GetFather()->GetDecision()].push_back(en);
+			
+			return ret;
+		};
+		auto findAttributeOccurances = [&](AI::Array<AI::Attribute> _in, AI::Attribute needle)->AI::Array<AI::Attribute>
+		{
+			AI::Array<AI::Attribute> ret;
+			for(auto& el : _in)
+			{
+				if (el.GetAsInt() == needle.GetAsInt() 
+					&& el.GetFather()->GetDecision() == needle.GetFather()->GetDecision())
+					ret.push_back(el);
+			}
+			return ret;
+		};
+
+		std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> map = findMostFrequent({});
+		
+		// For each unique decision:
+		
+		while(true)
+		{
+			for(auto& pair : map)
+			{
+				for(auto& vec : pair.second)
+				{
+					auto rule = AI::Rule({ vec.first }, vec.first.GetFather()->GetDecision(),
+						std::make_shared<AI::DecisiveSystem>(lemSystem));
+					auto fragments = rule.GetFragments();
+
+					while(!rule.Check())
+					{
+						// BUG: Works only for first time, we need to check for all fragments, not only back
+						auto attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+							fragments.back().GetIndex()),fragments.back());
+
+
+						std::vector<int> indexes;
+						for(AI::Attribute att : attributes)
+						{
+							indexes.push_back(att.GetFather()->GetIndex());
+						}
+						auto freq = findMostFrequent(indexes);
+
+						auto vector = freq[fragments[0].GetFather()->GetDecision()];
+						if (!vector.empty())
+							fragments.push_back(vector[0].first);
+
+						continue;
+					}
+				}
+			}
+		}
+
+		return;
+	};
+	//Pkt1();
+	//Pkt2();
+	Pkt3();
 
 	auto choinka = []()
 	{

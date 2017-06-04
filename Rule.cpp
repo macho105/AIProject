@@ -74,6 +74,25 @@ std::vector<std::vector<int>> AI::Rule::comb(int size, int level)
 	return ret;
 }
 
+std::string AI::Rule::Dump()
+{
+	std::string ret;
+	char buffer[255];
+	for(auto i  = 0; i < _fragments.size(); i++)
+	{
+		sprintf_s(buffer, "(a%i=%i)",_fragments[i].GetIndex() + 1,_fragments[i].GetAsInt());
+		ret += buffer;
+		if(i + 1 < _fragments.size())
+		{
+			ret += "^";
+		}
+		memset(buffer, 0, 255);
+	}
+	ret += "=>";
+	ret += std::to_string(int(_decision));
+	return ret;
+}
+
 AI::Rule::Rule(Array<int> attributes, int index, std::shared_ptr<DecisiveSystem> system)
 {
 	_system = system;

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "DecisiveSystemReader.h"
 #include "Object.h"
+#include "FrequencyDescriptor.h"
 #include <numeric>
 
 #define AUSTRALIAN_SYSTEM_FILENAME	"C:\\australian.txt"
@@ -348,6 +349,44 @@ void Zestaw2()
 		AI::DecisiveSystemReader lemReader(LEM2_SYSTEM_FILENAME);
 		auto lemSystem = lemReader.ReadDecisiveSystem();
 
+		AI::FrequencyDescriptor frequencyDescriptor(std::make_shared<AI::DecisiveSystem>(lemSystem));
+
+		auto map = frequencyDescriptor.Produce();
+		AI::Array<AI::Rule> rules;
+
+		while(true)
+		{
+			for(auto& pair : map)
+			{
+				auto actualConcept = pair.first;
+				AI::Array<AI::AttributeScore> scores;
+				scores.push_back(map[actualConcept].front());
+
+				AI::Rule rule({ *scores.front().attribute },
+					actualConcept, std::make_shared<AI::DecisiveSystem>(lemSystem));
+			
+				auto& fragments = rule.GetFragments();
+				auto score = scores.back();
+
+				frequencyDescriptor.IncludeIndexes(score.indexes);
+				while (!rule.Check())
+				{
+
+					for(auto i = 0; i < score.indexes.size(); i++)
+						frequencyDescriptor.SetAsConsidered(map[actualConcept][i]);
+					
+					frequencyDescriptor.ExcludeIndexes(score.indexes);
+
+					map = frequencyDescriptor.Produce();
+					score = map[actualConcept].front();
+					scores.push_back(score);
+					fragments.push_back(*score.attribute);
+				}
+				printf("%s\n", rule.Dump().c_str());
+				return;
+			}
+		}
+
 		auto uniqDecisions = lemSystem.GetUniqueDecisions();
 
 		auto findMostFrequent = [&](std::vector<int> indexes)->std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>>
@@ -423,58 +462,58 @@ void Zestaw2()
 			}
 			att = ret;
 		};
-		std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> map = findMostFrequent({});
+		//std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> map = findMostFrequent({});
 		
 
 		// For each unique decision:
 		
-		while(true)
-		{
-			for(auto& pair : map)
-			{
-				for(auto& vec : pair.second)
-				{
-					auto rule = AI::Rule({ vec.first }, vec.first.GetFather()->GetDecision(),
-						std::make_shared<AI::DecisiveSystem>(lemSystem));
-					auto fragments = rule.GetFragments();
+		//while(true)
+		//{
+		//	for(auto& pair : map)
+		//	{
+		//		for(auto& vec : pair.second)
+		//		{
+		//			auto rule = AI::Rule({ vec.first }, vec.first.GetFather()->GetDecision(),
+		//				std::make_shared<AI::DecisiveSystem>(lemSystem));
+		//			auto fragments = rule.GetFragments();
 
-					while(!rule.Check() || 
-						fragments.size() != lemSystem.GetObjectAtIndex(0)->GetSize())
-					{
-						// BUG: Works only for first time, we need to check for all fragments, not only back
-						/*auto attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-							fragments.back().GetIndex()),fragments.back());*/
+		//			while(!rule.Check() || 
+		//				fragments.size() != lemSystem.GetObjectAtIndex(0)->GetSize())
+		//			{
+		//				// BUG: Works only for first time, we need to check for all fragments, not only back
+		//				/*auto attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+		//					fragments.back().GetIndex()),fragments.back());*/
 
-						AI::Array<AI::Attribute> attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-							fragments.back().GetIndex()), fragments.back());
-						
-						
-						/*for(auto frag : fragments)
-						{
-							auto temp = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-								frag.GetIndex()), fragments.front());
+		//				AI::Array<AI::Attribute> attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+		//					fragments.back().GetIndex()), fragments.back());
+		//				
+		//				
+		//				/*for(auto frag : fragments)
+		//				{
+		//					auto temp = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+		//						frag.GetIndex()), fragments.front());
 
-							for(auto att : temp)
-								if(std::find)
-						}*/
+		//					for(auto att : temp)
+		//						if(std::find)
+		//				}*/
 
-						std::vector<int> indexes;
-						for(AI::Attribute att : attributes)
-							indexes.push_back(att.GetFather()->GetIndex());
-						
-						auto freq = findMostFrequent(indexes);
+		//				std::vector<int> indexes;
+		//				for(AI::Attribute att : attributes)
+		//					indexes.push_back(att.GetFather()->GetIndex());
+		//				
+		//				auto freq = findMostFrequent(indexes);
 
-						auto vector = freq[fragments[0].GetFather()->GetDecision()];
-						cleanVec(vector, fragments);
+		//				auto vector = freq[fragments[0].GetFather()->GetDecision()];
+		//				cleanVec(vector, fragments);
 
-						if (!vector.empty())
-							fragments.push_back(vector[0].first);
+		//				if (!vector.empty())
+		//					fragments.push_back(vector[0].first);
 
-						continue;
-					}
-				}
-			}
-		}
+		//				continue;
+		//			}
+		//		}
+		//	}
+		//}
 
 		return;
 	};

@@ -76,6 +76,8 @@ namespace AI
 
 		void IncludeIndexes(AI::Array<int> _in);
 		void ExcludeIndexes(AI::Array<int> _in);
+		void ReverseAndExclude(AI::Array<int> _in);
+		void Reset();
 		std::map<int, Array<AI::AttributeScore>> AI::FrequencyDescriptor::Produce();
 
 	};

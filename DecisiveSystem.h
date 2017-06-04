@@ -51,7 +51,14 @@ namespace AI
 		Array<Attribute>& GetAttributesAtIndex(int index);
 		Array<float>& GetAttributesValues(int index);
 		Array3D<Attribute> ProduceDiffArray();
-		
+		int CountDecision(int decision)
+		{
+			int ret = 0;
+			for (auto obj : _matrix)
+				if (obj->GetDecision() == decision)
+					ret++;
+			return ret;
+		}
 	};
 }
 

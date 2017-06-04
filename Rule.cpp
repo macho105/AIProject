@@ -74,6 +74,7 @@ std::vector<std::vector<int>> AI::Rule::comb(int size, int level)
 	return ret;
 }
 
+
 std::string AI::Rule::Dump()
 {
 	std::string ret;

@@ -12,6 +12,13 @@
 #define DECISIVE_SYSTEM_FILENAME	"C:\\SystemDecyzyjny.txt"
 #define LEM2_SYSTEM_FILENAME		"C:\\LEM2System.txt"
 
+#define STD_INSERT_AND_ENSURE_UNIQUENESS(first, second) \
+	first.insert(std::end(first),std::begin(second),std::end(second));\
+	std::sort(std::begin(first),std::end(first));\
+	first.erase(std::unique(std::begin(first), std::end(first)),std::end(first));
+
+
+
 void DisplayExercise(std::string zestaw, std::string pkt = "")
 {
 	if (zestaw.size())
@@ -348,46 +355,56 @@ void Zestaw2()
 	{
 		AI::DecisiveSystemReader lemReader(LEM2_SYSTEM_FILENAME);
 		auto lemSystem = lemReader.ReadDecisiveSystem();
-
+		auto uniqDecisions = lemSystem.GetUniqueDecisions();
+		
 		AI::FrequencyDescriptor frequencyDescriptor(std::make_shared<AI::DecisiveSystem>(lemSystem));
 
 		auto map = frequencyDescriptor.Produce();
 		AI::Array<AI::Rule> rules;
-
-		while(true)
+		AI::Array<int> covers;
+		while (true)
 		{
-			for(auto& pair : map)
+			for (auto decision : uniqDecisions)
 			{
-				auto actualConcept = pair.first;
-				AI::Array<AI::AttributeScore> scores;
-				scores.push_back(map[actualConcept].front());
-
-				AI::Rule rule({ *scores.front().attribute },
-					actualConcept, std::make_shared<AI::DecisiveSystem>(lemSystem));
-			
-				auto& fragments = rule.GetFragments();
-				auto score = scores.back();
-
-				frequencyDescriptor.IncludeIndexes(score.indexes);
-				while (!rule.Check())
+				while(covers.size() < lemSystem.CountDecision(std::stoi(decision)))
 				{
+					auto actualConcept = std::stoi(decision);
+					AI::Array<AI::AttributeScore> scores;
+					scores.push_back(map[actualConcept].front());
 
-					for(auto i = 0; i < score.indexes.size(); i++)
-						frequencyDescriptor.SetAsConsidered(map[actualConcept][i]);
-					
-					frequencyDescriptor.ExcludeIndexes(score.indexes);
+					AI::Rule rule({ *scores.front().attribute },
+						actualConcept, std::make_shared<AI::DecisiveSystem>(lemSystem));
 
+					auto& fragments = rule.GetFragments();
+					auto score = scores.back();
+
+					frequencyDescriptor.IncludeIndexes(score.indexes);
+					while (!rule.Check())
+					{
+
+						for (auto i = 0; i < score.indexes.size(); i++)
+							frequencyDescriptor.SetAsConsidered(map[actualConcept][i]);
+
+						frequencyDescriptor.ExcludeIndexes(score.indexes);
+
+						map = frequencyDescriptor.Produce();
+						score = map[actualConcept].front();
+						scores.push_back(score);
+						fragments.push_back(*score.attribute);
+					}
+					printf("%s\n", rule.Dump().c_str());
+					rules.push_back(rule);
+
+					STD_INSERT_AND_ENSURE_UNIQUENESS(covers, score.indexes);
+					scores.clear();
+					frequencyDescriptor.Reset();
+					frequencyDescriptor.ReverseAndExclude(covers);
 					map = frequencyDescriptor.Produce();
-					score = map[actualConcept].front();
-					scores.push_back(score);
-					fragments.push_back(*score.attribute);
-				}
-				printf("%s\n", rule.Dump().c_str());
-				return;
+				}	
+				covers.clear();
 			}
 		}
 
-		auto uniqDecisions = lemSystem.GetUniqueDecisions();
 
 		auto findMostFrequent = [&](std::vector<int> indexes)->std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>>
 		{

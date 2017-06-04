@@ -85,6 +85,22 @@ void AI::FrequencyDescriptor::ExcludeIndexes(AI::Array<int> _in)
 	_indexesToInclude = _in;
 }
 
+void AI::FrequencyDescriptor::ReverseAndExclude(AI::Array<int> _in)
+{
+	auto count = _system->GetObjectsCount();
+	for(auto i = 0; i < count; i++)
+	{
+		if(std::find(std::begin(_in),std::end(_in),i) == std::end(_in))
+			_indexesToInclude.push_back(i);
+	}
+}
+
+void AI::FrequencyDescriptor::Reset()
+{
+	_alreadyConsidered.clear();
+	_indexesToInclude.clear();
+}
+
 void AI::FrequencyDescriptor::SetAsConsidered(AttributeScore score)
 {
 	_alreadyConsidered.push_back(score);

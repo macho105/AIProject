@@ -51,6 +51,7 @@ namespace AI
 		Array<Attribute>& GetAttributesAtIndex(int index);
 		Array<float>& GetAttributesValues(int index);
 		Array3D<Attribute> ProduceDiffArray();
+		
 	};
 }
 

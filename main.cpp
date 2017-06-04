@@ -356,6 +356,11 @@ void Zestaw2()
 			std::vector<std::pair<AI::Attribute,/*frequency:*/int>> toAdd;
 			for(auto i = 0; i < lemSystem.GetObjectAtIndex(0)->GetSize(); i++)
 			{
+				if (/*!indexes.empty() ||*/
+					std::find(std::begin(indexes),
+						std::end(indexes),i) != std::end(indexes))
+					continue;
+
 				auto uniques = lemSystem.GetUniqueAttributes(i);
 				for(auto element : uniques)
 				{
@@ -365,11 +370,11 @@ void Zestaw2()
 						if (el.GetAsInt() == element.GetAsInt() && 
 							el.GetFather()->GetDecision() == element.GetFather()->GetDecision())
 							count++;
-					
+					/*
 					if(indexes.empty() ||
 						std::find(std::begin(indexes),
 							std::end(indexes),
-							element.GetFather()->GetIndex()) != std::end(indexes))
+							element.GetFather()->GetIndex()) != std::end(indexes))*/
 					toAdd.push_back(std::make_pair(element, count));
 				}
 			}
@@ -420,6 +425,7 @@ void Zestaw2()
 		};
 		std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> map = findMostFrequent({});
 		
+
 		// For each unique decision:
 		
 		while(true)

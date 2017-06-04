@@ -404,7 +404,20 @@ void Zestaw2()
 			}
 			return ret;
 		};
-
+		auto cleanVec = [&](AI::Array<std::pair<AI::Attribute,int>>& att, AI::Array<AI::Attribute> fragments)
+		{
+			AI::Array<std::pair<AI::Attribute, int>> ret;
+			for(auto frag : fragments)
+			{
+				for(auto attribute : att)
+				{
+					if (frag.GetIndex() != attribute.first.GetIndex() &&
+						frag.GetAsInt() != attribute.first.GetAsInt())
+						ret.push_back(attribute);
+				}
+			}
+			att = ret;
+		};
 		std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> map = findMostFrequent({});
 		
 		// For each unique decision:
@@ -419,21 +432,35 @@ void Zestaw2()
 						std::make_shared<AI::DecisiveSystem>(lemSystem));
 					auto fragments = rule.GetFragments();
 
-					while(!rule.Check())
+					while(!rule.Check() || 
+						fragments.size() != lemSystem.GetObjectAtIndex(0)->GetSize())
 					{
 						// BUG: Works only for first time, we need to check for all fragments, not only back
-						auto attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-							fragments.back().GetIndex()),fragments.back());
+						/*auto attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+							fragments.back().GetIndex()),fragments.back());*/
 
+						AI::Array<AI::Attribute> attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+							fragments.back().GetIndex()), fragments.back());
+						
+						
+						/*for(auto frag : fragments)
+						{
+							auto temp = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
+								frag.GetIndex()), fragments.front());
+
+							for(auto att : temp)
+								if(std::find)
+						}*/
 
 						std::vector<int> indexes;
 						for(AI::Attribute att : attributes)
-						{
 							indexes.push_back(att.GetFather()->GetIndex());
-						}
+						
 						auto freq = findMostFrequent(indexes);
 
 						auto vector = freq[fragments[0].GetFather()->GetDecision()];
+						cleanVec(vector, fragments);
+
 						if (!vector.empty())
 							fragments.push_back(vector[0].first);
 

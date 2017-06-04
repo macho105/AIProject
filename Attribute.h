@@ -24,13 +24,16 @@ namespace AI
 		int _index;
 	public:
 		bool operator==(int index) const { return index == _index; }
+		bool operator==(Attribute other) { return GetAsInt() == other.GetAsInt() && _index == other.GetIndex(); }
+
+
 		int GetIndex() const { return _index; }
 		Attribute(std::string val,int index,std::shared_ptr<AI::Object> father = nullptr, AtributeType type = kNone)
 			: HasFather<AI::Object>(father), _raw(val)
 			, _type(type)	, _fVal(nullptr)
 			, _intVal(nullptr), _index(index)
 		{
-			
+
 		}
 		std::string ToString()
 		{

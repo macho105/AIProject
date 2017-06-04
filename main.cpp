@@ -388,6 +388,9 @@ void Zestaw2()
 						frequencyDescriptor.ExcludeIndexes(score.indexes);
 
 						map = frequencyDescriptor.Produce();
+						if(map[actualConcept].size() == 0)
+							break;
+						
 						score = map[actualConcept].front();
 						scores.push_back(score);
 						fragments.push_back(*score.attribute);
@@ -403,6 +406,7 @@ void Zestaw2()
 				}	
 				covers.clear();
 			}
+			break;
 		}
 
 

@@ -12,10 +12,6 @@
 #define DECISIVE_SYSTEM_FILENAME	"C:\\SystemDecyzyjny.txt"
 #define LEM2_SYSTEM_FILENAME		"C:\\LEM2System.txt"
 
-#define STD_INSERT_AND_ENSURE_UNIQUENESS(first, second) \
-	first.insert(std::end(first),std::begin(second),std::end(second));\
-	std::sort(std::begin(first),std::end(first));\
-	first.erase(std::unique(std::begin(first), std::end(first)),std::end(first));
 
 
 
@@ -409,138 +405,11 @@ void Zestaw2()
 			break;
 		}
 
-
-		auto findMostFrequent = [&](std::vector<int> indexes)->std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>>
-		{
-			std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> ret;
-			std::vector<std::pair<AI::Attribute,/*frequency:*/int>> toAdd;
-			for(auto i = 0; i < lemSystem.GetObjectAtIndex(0)->GetSize(); i++)
-			{
-				if (/*!indexes.empty() ||*/
-					std::find(std::begin(indexes),
-						std::end(indexes),i) != std::end(indexes))
-					continue;
-
-				auto uniques = lemSystem.GetUniqueAttributes(i);
-				for(auto element : uniques)
-				{
-					auto col = lemSystem.GetAttributesAtIndex(i);
-					auto count = 0;
-					for (auto el : col)
-						if (el.GetAsInt() == element.GetAsInt() && 
-							el.GetFather()->GetDecision() == element.GetFather()->GetDecision())
-							count++;
-					/*
-					if(indexes.empty() ||
-						std::find(std::begin(indexes),
-							std::end(indexes),
-							element.GetFather()->GetIndex()) != std::end(indexes))*/
-					toAdd.push_back(std::make_pair(element, count));
-				}
-			}
-			std::sort(std::begin(toAdd), std::end(toAdd), [](std::pair<AI::Attribute,/*frequency:*/int> first,
-				std::pair<AI::Attribute,/*frequency:*/int> second)
-			{
-				if(first.second == second.second)
-				{
-					if (first.first.GetFather()->GetIndex() == second.first.GetFather()->GetIndex())
-					{
-						return first.first.GetIndex() > second.first.GetIndex();
-					}
-					else
-						return first.first.GetFather()->GetIndex() > second.first.GetFather()->GetIndex();
-				}
-				else
-					return first.second > second.second;
-			});
-			for (auto en : toAdd)
-				ret[en.first.GetFather()->GetDecision()].push_back(en);
-			
-			return ret;
-		};
-		auto findAttributeOccurances = [&](AI::Array<AI::Attribute> _in, AI::Attribute needle)->AI::Array<AI::Attribute>
-		{
-			AI::Array<AI::Attribute> ret;
-			for(auto& el : _in)
-			{
-				if (el.GetAsInt() == needle.GetAsInt() 
-					&& el.GetFather()->GetDecision() == needle.GetFather()->GetDecision())
-					ret.push_back(el);
-			}
-			return ret;
-		};
-		auto cleanVec = [&](AI::Array<std::pair<AI::Attribute,int>>& att, AI::Array<AI::Attribute> fragments)
-		{
-			AI::Array<std::pair<AI::Attribute, int>> ret;
-			for(auto frag : fragments)
-			{
-				for(auto attribute : att)
-				{
-					if (frag.GetIndex() != attribute.first.GetIndex() &&
-						frag.GetAsInt() != attribute.first.GetAsInt())
-						ret.push_back(attribute);
-				}
-			}
-			att = ret;
-		};
-		//std::map</*Decision*/int, std::vector<std::pair<AI::Attribute,/*frequency:*/int>>> map = findMostFrequent({});
-		
-
-		// For each unique decision:
-		
-		//while(true)
-		//{
-		//	for(auto& pair : map)
-		//	{
-		//		for(auto& vec : pair.second)
-		//		{
-		//			auto rule = AI::Rule({ vec.first }, vec.first.GetFather()->GetDecision(),
-		//				std::make_shared<AI::DecisiveSystem>(lemSystem));
-		//			auto fragments = rule.GetFragments();
-
-		//			while(!rule.Check() || 
-		//				fragments.size() != lemSystem.GetObjectAtIndex(0)->GetSize())
-		//			{
-		//				// BUG: Works only for first time, we need to check for all fragments, not only back
-		//				/*auto attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-		//					fragments.back().GetIndex()),fragments.back());*/
-
-		//				AI::Array<AI::Attribute> attributes = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-		//					fragments.back().GetIndex()), fragments.back());
-		//				
-		//				
-		//				/*for(auto frag : fragments)
-		//				{
-		//					auto temp = findAttributeOccurances(lemSystem.GetAttributesAtIndex(
-		//						frag.GetIndex()), fragments.front());
-
-		//					for(auto att : temp)
-		//						if(std::find)
-		//				}*/
-
-		//				std::vector<int> indexes;
-		//				for(AI::Attribute att : attributes)
-		//					indexes.push_back(att.GetFather()->GetIndex());
-		//				
-		//				auto freq = findMostFrequent(indexes);
-
-		//				auto vector = freq[fragments[0].GetFather()->GetDecision()];
-		//				cleanVec(vector, fragments);
-
-		//				if (!vector.empty())
-		//					fragments.push_back(vector[0].first);
-
-		//				continue;
-		//			}
-		//		}
-		//	}
-		//}
-
 		return;
 	};
 	//Pkt1();
 	//Pkt2();
-	Pkt3();
+	//Pkt3();
 
 	auto choinka = []()
 	{
@@ -565,7 +434,7 @@ void Zestaw2()
 DWORD main(int argc, char* argv[])
 {
 	//Zestaw1();
-	Zestaw2();
+	//Zestaw2();
 
 	system("pause");
 	return S_OK;

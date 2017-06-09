@@ -3,6 +3,7 @@
 #include "AlgorithmProvider.h"
 #include "DecisiveSystem.h"
 #include <memory>
+#include <sstream>
 
 namespace AI
 {

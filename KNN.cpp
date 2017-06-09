@@ -1,5 +1,14 @@
 #include "KNN.h"
+#include <iomanip>
 
+
+template <typename T>
+static std::string to_string_with_precision(const T a_value, const int n = 6)
+{
+	std::ostringstream out;
+	out << std::setprecision(n) << a_value;
+	return out.str();
+}
 
 AI::KNN::KNN(Type algo, int k)
 {
@@ -100,7 +109,7 @@ std::string AI::KNN::Report::Dump()
 	std::map<std::string, std::map<std::string, int>> countMap;
 	auto decisionCounts = test->GetDecisionsCount();
 
-	ret += "\t\t";
+	ret += "\t\t\t\t";
 	for(auto decision : this->test->GetUniqueDecisions())
 	{
 		ret += decision;
@@ -111,7 +120,6 @@ std::string AI::KNN::Report::Dump()
 	ret += "Coverage\n";
 
 
-
 	for(auto report : this->reports)
 	{		
 		countMap[report.decision][report.originalDecision]++;
@@ -119,7 +127,7 @@ std::string AI::KNN::Report::Dump()
 	
 	for(auto decision : this->test->GetUniqueDecisions())
 	{
-		ret += "\t";
+		ret += "\t\t\t";
 		ret += decision;
 		ret += "\t";
 		for(auto second : this->test->GetUniqueDecisions())
@@ -145,8 +153,8 @@ std::string AI::KNN::Report::Dump()
 		}
 		score /= total;
 
-		ret += std::to_string(score);
-		ret += "\t";
+		ret += to_string_with_precision(score, 2);
+		ret += "\t\t";
 
 		// Coverage:
 		score = 0;
@@ -160,7 +168,7 @@ std::string AI::KNN::Report::Dump()
 			}
 		}
 		score /= decisionCounts[decision];
-		ret += std::to_string(score);
+		ret += to_string_with_precision(score, 2);
 		ret += "\n";
 	}
 	
@@ -180,7 +188,7 @@ std::string AI::KNN::Report::Dump()
 
 		}
 		tpr = tpr / (tpr + wrong);
-		ret += std::to_string(tpr);
+		ret += to_string_with_precision(tpr, 2);
 		ret += "\t";
 		tpr = 0;
 		wrong = 0;

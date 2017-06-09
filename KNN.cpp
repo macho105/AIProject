@@ -1,47 +1,72 @@
 #include "KNN.h"
 
+AI::KNN::KNN(Type algo, int k)
+{
+	_algorithm = AlgorithmProvider::Instance().Get(algo);
+	this->k = k;
+}
+
 void AI::KNN::Run()
 {
+	
+
 	for (auto i = 0; i < _test->GetObjectsCount(); i++)
 	{
-		auto uniqueDecisions = _train->GetUniqueDecisions();
-		
-		for (auto decision : uniqueDecisions)
+		auto map = GetKNearest(i);
+		std::pair<double, std::string> minScore = { std::numeric_limits<double>::max(),"" };
+
+		for (auto& decision : _test->GetUniqueDecisions())
 		{
-			
+			auto score = 0.f;
+			auto arr = map[decision];
+			for (auto el : arr)
+				score += el.first;
+
+			if (minScore.first == score)
+			{
+				minScore = { std::numeric_limits<double>::max(),"" };
+				continue;
+			}
+
+			if (minScore.first > score)
+				minScore = { score,decision };
 		}
-		auto arr = Calculate(i);
+		if (minScore.second.empty())
+			printf("Couldn't classify %d object \n", i);
+		else
+			printf("Object %i was classiefied as :%s\n",i, minScore.second.c_str());
 
-		auto indexes = GetKNearest(arr);
-
+		minScore = { std::numeric_limits<double>::max(),"" };
 	}
 }
 
-std::vector<double> AI::KNN::Calculate(int x)
+AI::KNNMap AI::KNN::GetKNearest(int xIndex)
 {
-	AI::Array<double> ret;
-
-	auto xObj = _test->GetObjectAtIndex(x);
-	for (auto i = 0; i < _train->GetObjectsCount(); i++)
+	KNNMap ret;
+	auto testObj = _test->GetObjectAtIndex(xIndex);
+	
+	for(auto& decision : _train->GetUniqueDecisions())
 	{
-		auto yObj = _train->GetObjectAtIndex(i);
-		auto result = _algorithm->Calculate(*xObj, *yObj);
+		AI::Array<std::pair<double, std::shared_ptr<AI::Object>>> toAdd;
+		AI::Array<std::pair<double, std::shared_ptr<Object>>> scores;
+		auto objects = _train->GetObjectsWithDecision(decision);
+		for (auto i = 0; i < objects.size(); i++)
+		{
+			auto trainObj = objects.at(i);
 
-		ret.push_back(result);
+			auto score = _algorithm->Calculate(*testObj, *trainObj);
+
+			scores.push_back({ score,trainObj });
+		}
+		std::sort(scores.begin(), scores.end());
+
+		for (auto i = 0; i < k; i++)
+			toAdd.push_back(scores[i]);	
+		
+		ret[decision] = toAdd;
 	}
+	
 
-	return ret;
-}
-
-std::vector<int> AI::KNN::GetKNearest(Array<double> _in)
-{
-	Array<int> ret;
-	for(auto i = 0; i < k; i++)
-	{
-		auto max = std::max(_in.begin(),_in.end());
-		auto it = max;/*STD_FIND(_in, _in.begin()-max);*/
-		ret.push_back(it - _in.begin());
-		STD_DELETE_ITEM_FROM_VECTOR(_in, it);
-	}
+	
 	return ret;
 }

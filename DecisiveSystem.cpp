@@ -96,3 +96,19 @@ AI::Array3D<AI::Attribute> AI::DecisiveSystem::ProduceDiffArray()
 	}
 	return ret;
 }
+
+AI::Array<std::shared_ptr<AI::Object>> AI::DecisiveSystem::GetObjectsWithDecision(std::string decision)
+{
+	return GetObjectsWithDecision(std::stoi(decision));
+}
+
+std::vector<std::shared_ptr<AI::Object>> AI::DecisiveSystem::GetObjectsWithDecision(int decision)
+{
+	AI::Array<std::shared_ptr<AI::Object>> ret;
+	for (auto obj : _matrix)
+	{
+		if (obj->GetDecision() == decision)
+			ret.push_back(obj);
+	}
+	return ret;
+}

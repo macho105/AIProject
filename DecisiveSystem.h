@@ -59,6 +59,9 @@ namespace AI
 					ret++;
 			return ret;
 		}
+		Array<std::shared_ptr<Object>> GetObjectsWithDecision(std::string decision);
+		Array<std::shared_ptr<Object>> GetObjectsWithDecision(int decision);
+
 	};
 }
 

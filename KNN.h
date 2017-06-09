@@ -12,18 +12,20 @@ namespace AI
 		Array<Attribute> yAttributes;
 		double power;
 	};
+	using KNNMap = std::map<std::string, AI::Array<std::pair<double, std::shared_ptr<AI::Object>>>>;
 
 	class KNN
 	{
 	public:
-		KNN(Type algo, int k, int d);
+		KNN(Type algo, int k);
 		KNN() = default;
 
 		void SetAlgorithm(Type algo)
 		{
 			_algorithm = AlgorithmProvider::Instance().Get(algo);
 		}
-		void SetSystems(std::shared_ptr<DecisiveSystem> train, std::shared_ptr<DecisiveSystem> test)
+		void SetSystems(std::shared_ptr<DecisiveSystem> train,
+			std::shared_ptr<DecisiveSystem> test)
 		{
 			_train = train; _test = test;
 		}
@@ -32,9 +34,11 @@ namespace AI
 
 
 	private:
-		int k,d;
-		Array<double> Calculate(int x);
-		Array<int> GetKNearest(Array<double> _in);
+		int k;
+		KNNMap AI::KNN::GetKNearest(int xIndex);
+		
+		
+
 
 		std::shared_ptr<DecisiveSystem> _train, _test;
 		std::shared_ptr<Algorithm> _algorithm;

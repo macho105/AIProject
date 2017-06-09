@@ -4,6 +4,7 @@
 #include "DecisiveSystemReader.h"
 #include "Object.h"
 #include "FrequencyDescriptor.h"
+#include "KNN.h"
 #include <numeric>
 
 #define AUSTRALIAN_SYSTEM_FILENAME	"C:\\australian.txt"
@@ -12,7 +13,8 @@
 #define DECISIVE_SYSTEM_FILENAME	"C:\\SystemDecyzyjny.txt"
 #define LEM2_SYSTEM_FILENAME		"C:\\LEM2System.txt"
 
-
+#define KNN_TEST_FILENAME			"C:\\KNNTest.txt"
+#define KNN_TRAIN_FILENAME			"C:\\KNNTrain.txt"
 
 
 void DisplayExercise(std::string zestaw, std::string pkt = "")
@@ -430,11 +432,27 @@ void Zestaw2()
 	//choinka();
 	return;
 }
+void Zestaw3()
+{
+	AI::DecisiveSystemReader testReader(KNN_TEST_FILENAME);
+	AI::DecisiveSystemReader trainReader(KNN_TRAIN_FILENAME);
+
+	auto test	= std::make_shared<AI::DecisiveSystem>(testReader.ReadDecisiveSystem());
+	auto train	= std::make_shared<AI::DecisiveSystem>(trainReader.ReadDecisiveSystem());
+
+	AI::KNN knn(AI::Type::kEuclid, 2);
+	knn.SetSystems(train, test);
+
+	knn.Run();
+
+	return;
+}
 
 DWORD main(int argc, char* argv[])
 {
 	//Zestaw1();
 	//Zestaw2();
+	Zestaw3();
 
 	system("pause");
 	return S_OK;

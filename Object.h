@@ -13,7 +13,7 @@ namespace AI
 		: public HasFather<DecisiveSystem> 
 		, std::enable_shared_from_this<Object>
 	{
-	private:
+	protected:
 		Array<Attribute> _attributes;
 		int _index;
 		std::shared_ptr<Rule> _rule;

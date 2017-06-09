@@ -3,7 +3,7 @@
 
 namespace AI
 {
-	
+
 	enum Type
 	{
 		kManhattan,

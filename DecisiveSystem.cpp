@@ -112,3 +112,19 @@ std::vector<std::shared_ptr<AI::Object>> AI::DecisiveSystem::GetObjectsWithDecis
 	}
 	return ret;
 }
+
+std::map<std::string,int> AI::DecisiveSystem::GetDecisionsCount()
+{
+	std::map<std::string, int> ret;
+
+	for(auto decision : GetUniqueDecisions())
+	{
+		int count = 0;
+		for (auto obj : _matrix)
+			if (obj->GetDecision() == std::stoi(decision))
+				count++;
+		
+		ret[decision] = count;
+	}
+	return ret;
+}

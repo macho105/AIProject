@@ -12,10 +12,25 @@ namespace AI
 		Array<Attribute> yAttributes;
 		double power;
 	};
+	
 	using KNNMap = std::map<std::string, AI::Array<std::pair<double, std::shared_ptr<AI::Object>>>>;
+
+	
 
 	class KNN
 	{
+	struct Report
+	{
+		struct DecisionReport
+		{
+			int index;
+			std::string decision, originalDecision;
+		};
+		Array<DecisionReport> reports;
+		std::shared_ptr<DecisiveSystem> test, train;
+
+		std::string Dump();
+	};
 	public:
 		KNN(Type algo, int k);
 		KNN() = default;
@@ -30,7 +45,7 @@ namespace AI
 			_train = train; _test = test;
 		}
 
-		void Run();
+		AI::KNN::Report Run();
 
 
 	private:

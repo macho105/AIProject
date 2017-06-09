@@ -443,8 +443,8 @@ void Zestaw3()
 	AI::KNN knn(AI::Type::kEuclid, 2);
 	knn.SetSystems(train, test);
 
-	knn.Run();
-
+	auto report = knn.Run();
+	printf("%s", report.Dump().c_str());
 	return;
 }
 

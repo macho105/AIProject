@@ -62,6 +62,7 @@ namespace AI
 		Array<std::shared_ptr<Object>> GetObjectsWithDecision(std::string decision);
 		Array<std::shared_ptr<Object>> GetObjectsWithDecision(int decision);
 
+		std::map<std::string, int> GetDecisionsCount();
 	};
 }
 

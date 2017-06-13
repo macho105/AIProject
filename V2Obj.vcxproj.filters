@@ -76,10 +76,10 @@
     <ClInclude Include="FrequencyDescriptor.h">
       <Filter>Header Files\AI\LEM</Filter>
     </ClInclude>
-    <ClInclude Include="Euclid.h">
+    <ClInclude Include="AlgorithmProvider.h">
       <Filter>Header Files\AI\KNN</Filter>
     </ClInclude>
-    <ClInclude Include="AlgorithmProvider.h">
+    <ClInclude Include="Algorithms.h">
       <Filter>Header Files\AI\KNN</Filter>
     </ClInclude>
   </ItemGroup>

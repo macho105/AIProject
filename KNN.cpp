@@ -23,6 +23,9 @@ AI::KNN::Report AI::KNN::Run()
 	report.test = _test;
 	report.train = _train;
 
+	if (k > _test->GetObjectAtIndex(0)->GetSize())
+		return report;
+
 	for (auto i = 0; i < _test->GetObjectsCount(); i++)
 	{
 		auto map = GetKNearest(i);

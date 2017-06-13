@@ -2,8 +2,9 @@
 #include <memory>
 #include "Algorithm.h"
 #include <map>
-#include "Euclid.h"
+#include "Algorithms.h"
 
+#define ALGO_PROVIDER_ADD(name) _map[k##name] = std::make_shared<name>(name())
 
 namespace AI
 {
@@ -13,7 +14,13 @@ namespace AI
 		std::map<Type, std::shared_ptr<Algorithm>> _map;
 		AlgorithmProvider()
 		{
-			_map[kEuclid] = std::make_shared<Euclid>(Euclid());
+			//_map[kEuclid] = std::make_shared<Euclid>(Euclid());
+
+			ALGO_PROVIDER_ADD(Euclid);
+			ALGO_PROVIDER_ADD(Manhattan);
+			ALGO_PROVIDER_ADD(Chebyshev);
+			ALGO_PROVIDER_ADD(Canberr);
+			ALGO_PROVIDER_ADD(Pearson);
 		}
 		~AlgorithmProvider() = default;
 

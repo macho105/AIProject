@@ -440,7 +440,7 @@ void Zestaw3()
 	auto test	= std::make_shared<AI::DecisiveSystem>(testReader.ReadDecisiveSystem());
 	auto train	= std::make_shared<AI::DecisiveSystem>(trainReader.ReadDecisiveSystem());
 
-	AI::KNN knn(AI::Type::kEuclid, 2);
+	AI::KNN knn(AI::Type::kChebyshev, 2);
 	knn.SetSystems(train, test);
 
 	auto report = knn.Run();
@@ -453,6 +453,7 @@ DWORD main(int argc, char* argv[])
 	//Zestaw1();
 	//Zestaw2();
 	Zestaw3();
+
 
 	system("pause");
 	return S_OK;

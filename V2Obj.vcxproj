@@ -132,7 +132,7 @@
     <ClInclude Include="Attribute.h" />
     <ClInclude Include="DecisiveSystem.h" />
     <ClInclude Include="DecisiveSystemReader.h" />
-    <ClInclude Include="Euclid.h" />
+    <ClInclude Include="Algorithms.h" />
     <ClInclude Include="FrequencyDescriptor.h" />
     <ClInclude Include="HasFather.h" />
     <ClInclude Include="HasFile.h" />

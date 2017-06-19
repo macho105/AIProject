@@ -175,7 +175,7 @@ std::string AI::KNN::Report::Dump()
 		ret += "\n";
 	}
 	
-	ret += "True Positive Rate\t";
+	ret += "True Positive Rate\t\t";
 	float tpr = 0, wrong = 0;
 	for(auto decision : test->GetUniqueDecisions())
 	{
@@ -183,7 +183,10 @@ std::string AI::KNN::Report::Dump()
 		{
 			if (obj.decision == decision)
 			{
-				if (obj.originalDecision == obj.decision || obj.decision.empty())
+				if (obj.decision.empty())
+					continue;
+
+				if (obj.originalDecision == obj.decision)
 					tpr++;
 				else
 					wrong++;

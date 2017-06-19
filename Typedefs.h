@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <numeric>
 
 #define STD_FIND(vec, item) \
 	std::find(std::begin(vec),std::end(vec),item)
@@ -19,6 +20,9 @@
 	first.insert(std::end(first),std::begin(second),std::end(second));\
 	std::sort(std::begin(first),std::end(first));\
 	first.erase(std::unique(std::begin(first), std::end(first)),std::end(first));
+
+#define STD_CALCULATE_MEAN(vec) \
+	std::accumulate(vec.begin(),vec.end(),0.0) / vec.size()
 
 namespace AI
 {

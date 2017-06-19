@@ -88,42 +88,63 @@ namespace AI
 		double Calculate(Object first, Object second) override
 		{
 			assert(first.GetSize() == second.GetSize());
-			double ret = 0,x = 0,y = 0, n = 1 / (double)first.GetSize();
+			//double ret = 0,x = 0,y = 0, n = 1 / (double)first.GetSize();
 
-			auto calcSomeParam = [&](Object obj)->double
+			auto fCalcMeanforObj = [&](Object obj)->double
 			{
 				double sum = 0;
 				for (auto i = 0; i < obj.GetSize(); i++)
 					sum += obj.At(i).GetAsFloat();
-				sum *= n;
+				sum /= obj.GetSize();
 				return sum;
 			};
-			auto calcYetAnotherParam = [&](Object obj, double param)->double
+			//auto calcYetAnotherParam = [&](Object obj, double param)->double
+			//{
+			//	double out = 0;
+			//	double top = 0, bottom = 0;
+			//	for(auto i = 0; i < obj.GetSize(); i++)
+			//	{
+
+			//		//top
+			//		top += (obj.At(i).GetAsFloat() - param);
+			//		//bottom
+			//		for(auto d = 0; d < obj.GetSize(); d++)
+			//		{
+			//			bottom += std::pow((obj.At(d).GetAsFloat() - param), 2);
+			//		}
+
+			//	}
+			//	bottom *= n;
+			//	bottom = std::sqrt(bottom);
+			//	out += top / bottom;
+			//	return out;
+			//};
+			//x = calcSomeParam(first); y = calcSomeParam(second);
+
+			//ret = n * calcYetAnotherParam(first, x) * calcYetAnotherParam(second, y);
+
+			//return 1 - std::abs(ret);
+			
+			auto fDenominator = [](Object obj, double mean)->double
 			{
-				double out = 0;
-				double top = 0, bottom = 0;
+				AI::Array<double> ret;
 				for(auto i = 0; i < obj.GetSize(); i++)
 				{
-
-					//top
-					top += (obj.At(i).GetAsFloat() - param);
-					//bottom
-					for(auto d = 0; d < obj.GetSize(); d++)
-					{
-						bottom += std::pow((obj.At(d).GetAsFloat() - param), 2);
-					}
-
+					ret.push_back(std::pow(obj.At(i).GetAsFloat() - mean, 2));
 				}
-				bottom *= n;
-				bottom = std::sqrt(bottom);
-				out += top / bottom;
-				return out;
+				return std::sqrt(STD_CALCULATE_MEAN(ret));
 			};
-			x = calcSomeParam(first); y = calcSomeParam(second);
+			AI::Array<double> ret;
+			double x = fCalcMeanforObj(first), y = fCalcMeanforObj(second),
+				xDenominator = fDenominator(first, x), yDenominator = fDenominator(second, y);
 
-			ret = n * calcYetAnotherParam(first, x) * calcYetAnotherParam(second, y);
+			for(auto i = 0; i < first.GetSize(); i++)
+			{
+				ret.push_back(((first.At(i).GetAsFloat() - x) / xDenominator) *
+					((second.At(i).GetAsFloat() - y) / yDenominator));
+			}
 
-			return 1 - std::abs(ret);
+			return std::abs(STD_CALCULATE_MEAN(ret));
 		}
 
 		Type GetType() override { return Type::kPearson; }

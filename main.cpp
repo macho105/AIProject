@@ -440,7 +440,7 @@ void Zestaw3()
 	auto test	= std::make_shared<AI::DecisiveSystem>(testReader.ReadDecisiveSystem());
 	auto train	= std::make_shared<AI::DecisiveSystem>(trainReader.ReadDecisiveSystem());
 
-	AI::KNN knn(AI::Type::kManhattan, 2);
+	AI::KNN knn(AI::Type::kPearson, 2);
 	knn.SetSystems(train, test);
 
 	auto report = knn.Run();

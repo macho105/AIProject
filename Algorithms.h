@@ -88,15 +88,42 @@ namespace AI
 		double Calculate(Object first, Object second) override
 		{
 			assert(first.GetSize() == second.GetSize());
-			double ret = 0;
+			double ret = 0,x = 0,y = 0, n = 1 / (double)first.GetSize();
 
-			for (auto i = 0; i < first.GetSize(); i++)
+			auto calcSomeParam = [&](Object obj)->double
 			{
-				double temp = 0;
-				temp = std::abs(first.At(i).GetAsFloat() - second.At(i).GetAsFloat());
-				if (temp > ret) ret = temp;
-			}
-			return ret;
+				double sum = 0;
+				for (auto i = 0; i < obj.GetSize(); i++)
+					sum += obj.At(i).GetAsFloat();
+				sum *= n;
+				return sum;
+			};
+			auto calcYetAnotherParam = [&](Object obj, double param)->double
+			{
+				double out = 0;
+				double top = 0, bottom = 0;
+				for(auto i = 0; i < obj.GetSize(); i++)
+				{
+
+					//top
+					top += (obj.At(i).GetAsFloat() - param);
+					//bottom
+					for(auto d = 0; d < obj.GetSize(); d++)
+					{
+						bottom += std::pow((obj.At(d).GetAsFloat() - param), 2);
+					}
+
+				}
+				bottom *= n;
+				bottom = std::sqrt(bottom);
+				out += top / bottom;
+				return out;
+			};
+			x = calcSomeParam(first); y = calcSomeParam(second);
+
+			ret = n * calcYetAnotherParam(first, x) * calcYetAnotherParam(second, y);
+
+			return 1 - std::abs(ret);
 		}
 
 		Type GetType() override { return Type::kPearson; }

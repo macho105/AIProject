@@ -409,9 +409,9 @@ void Zestaw2()
 
 		return;
 	};
-	//Pkt1();
-	//Pkt2();
-	//Pkt3();
+	Pkt1();
+	Pkt2();
+	Pkt3();
 
 	auto choinka = []()
 	{
@@ -440,7 +440,7 @@ void Zestaw3()
 	auto test	= std::make_shared<AI::DecisiveSystem>(testReader.ReadDecisiveSystem());
 	auto train	= std::make_shared<AI::DecisiveSystem>(trainReader.ReadDecisiveSystem());
 
-	AI::KNN knn(AI::Type::kChebyshev, 2);
+	AI::KNN knn(AI::Type::kManhattan, 2);
 	knn.SetSystems(train, test);
 
 	auto report = knn.Run();
@@ -451,7 +451,7 @@ void Zestaw3()
 DWORD main(int argc, char* argv[])
 {
 	//Zestaw1();
-	//Zestaw2();
+	Zestaw2();
 	Zestaw3();
 
 

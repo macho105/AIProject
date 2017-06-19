@@ -188,7 +188,6 @@ std::string AI::KNN::Report::Dump()
 				else
 					wrong++;
 			}
-
 		}
 		tpr = tpr / (tpr + wrong);
 		ret += to_string_with_precision(tpr, 2);
@@ -197,6 +196,27 @@ std::string AI::KNN::Report::Dump()
 		wrong = 0;
 	}
 	
+	ret += "\n";
+
+	double accGlobal = 0, catchedObjects = 0, classifiedGood = 0 , covGlobal = 0, objCount = 0;
+	objCount = test->GetObjectsCount();
+	
+	for(auto& report : reports)
+	{
+		if (!report.decision.empty())
+			catchedObjects++;
+
+		if (report.decision == report.originalDecision && !report.decision.empty())
+			classifiedGood++;
+	}
+
+	accGlobal = classifiedGood / catchedObjects;
+	covGlobal = catchedObjects / objCount;
+	
+	ret += "Global Accuracy: ";
+	ret += to_string_with_precision(accGlobal, 2);
+	ret += " Global Coverage: ";
+	ret += to_string_with_precision(covGlobal, 2);
 	ret += "\n";
 
 	return ret;

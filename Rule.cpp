@@ -91,7 +91,32 @@ std::string AI::Rule::Dump()
 	}
 	ret += "=>";
 	ret += std::to_string(int(_decision));
+	if(_support > 1)
+	{
+		ret += "[";
+		ret += std::to_string(_support);
+		ret += "]";
+	}
 	return ret;
+}
+
+bool AI::Rule::operator==(Rule other) 
+{
+	auto frags = other.GetFragments();
+	if (frags.size() != this->GetFragments().size())
+		return false;
+
+	if (other._decision != this->_decision)
+		return false;
+
+	for(auto frag : frags)
+	{
+		auto it = STD_FIND(_fragments, frag);
+		if (it == std::end(_fragments))
+			return false;
+	}
+
+	return true;
 }
 
 AI::Rule::Rule(Array<int> attributes, int index, std::shared_ptr<DecisiveSystem> system)

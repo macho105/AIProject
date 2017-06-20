@@ -79,6 +79,15 @@ namespace AI
 		void ReverseAndExclude(AI::Array<int> _in);
 		void Reset();
 		std::map<int, Array<AI::AttributeScore>> AI::FrequencyDescriptor::Produce();
-
+		int GetIndexesToInclude(int dec)
+		{
+			int ret = 0;
+			for(auto index : _indexesToInclude)
+			{
+				if (dec == _system->GetDecision(index))
+					ret++;
+			}
+			return ret;
+		}
 	};
 }

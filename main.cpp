@@ -206,6 +206,28 @@ void Zestaw2()
 			level++;
 		}
 	};
+	auto fSquashRules = [](AI::Array<AI::Rule>& rules)
+	{
+		AI::Array<AI::Rule> ret;
+		for (auto& rule : rules)
+		{
+			// Check if rule is already present in ret:
+			auto it = STD_FIND(ret, rule);
+			if (it == std::end(ret))
+			{
+				ret.push_back(rule);
+			}
+		}
+		for (auto& rule : rules)
+		{
+			for (auto& sec : ret)
+			{
+				if (rule == sec)
+					sec.IncreaseSupport();
+			}
+		}
+		rules = ret;
+	};
 	auto Pkt2 = [&]()
 	{
 		// We wanna operate on cpy:
@@ -290,6 +312,8 @@ void Zestaw2()
 			
 			indexes = toRet;
 		};
+		
+		
 		auto level = 1;
 		AI::Array<AI::Rule> ret;
 		while(true)
@@ -305,8 +329,9 @@ void Zestaw2()
 				colContains(indexes, i);
 				
 
+
 				// Printing:
-				if (indexes.size())
+				/*if (indexes.size())
 				{
 					printf("dla o%i mamy:\n",i+1);
 					for(auto vec : indexes)
@@ -322,7 +347,7 @@ void Zestaw2()
 						printf("=>%i\n", sys.GetDecision(i));
 
 					}
-				}
+				}*/
 		
 				for (auto el : indexes)
 				{
@@ -339,7 +364,15 @@ void Zestaw2()
 			else
 				// No size gain, we can finish now:
 				if (lastSize == ret.size())
+				{
+					fSquashRules(ret);
+					for(auto rule : ret)
+					{
+						std::cout << rule.Dump() << std::endl;
+					}
 					return;
+
+				}
 				else
 					lastSize = ret.size();
 
@@ -360,10 +393,13 @@ void Zestaw2()
 		auto map = frequencyDescriptor.Produce();
 		AI::Array<AI::Rule> rules;
 		AI::Array<int> covers;
+		int lastCoversSize = 0;
+
 		while (true)
 		{
 			for (auto decision : uniqDecisions)
 			{
+				
 				while(covers.size() < lemSystem.CountDecision(std::stoi(decision)))
 				{
 					auto actualConcept = std::stoi(decision);
@@ -393,8 +429,14 @@ void Zestaw2()
 						scores.push_back(score);
 						fragments.push_back(*score.attribute);
 					}
-					printf("%s\n", rule.Dump().c_str());
+					int toDelete = 0;
+					if (rules.size() && rules.back().GetDecision() == 
+						rule.GetDecision()) 
+						toDelete = rules.back().GetSupport();
+
+					rule.SetSupport(frequencyDescriptor.GetIndexesToInclude(std::stoi(decision))  -1/*- toDelete != 1 ? toDelete : 0*/);
 					rules.push_back(rule);
+					lastCoversSize = covers.size();
 
 					STD_INSERT_AND_ENSURE_UNIQUENESS(covers, score.indexes);
 					scores.clear();
@@ -406,11 +448,15 @@ void Zestaw2()
 			}
 			break;
 		}
-
+		//fSquashRules(rules);
+		for (auto rule : rules)
+		{
+			std::cout << rule.Dump() << std::endl;
+		}
 		return;
 	};
-	Pkt1();
-	Pkt2();
+	//Pkt1();
+	//Pkt2();
 	Pkt3();
 
 	auto choinka = []()
@@ -439,8 +485,22 @@ void Zestaw3()
 
 	auto test	= std::make_shared<AI::DecisiveSystem>(testReader.ReadDecisiveSystem());
 	auto train	= std::make_shared<AI::DecisiveSystem>(trainReader.ReadDecisiveSystem());
+	
+	int k = -1;
+	while (k < 0 || k > test->GetObjectAtIndex(0)->GetSize()-1)
+	{
+		printf("K: ");
+		scanf_s("%d", &k);
+	}
+	AI::Type type = AI::kFirst;
+	while(type <= AI::kFirst || type > AI::kLast)
+	{
+		printf("Metric: ");
+		scanf_s("%d", &type);
+	}
 
-	AI::KNN knn(AI::Type::kPearson, 2);
+
+	AI::KNN knn(type, k);
 	knn.SetSystems(train, test);
 
 	auto report = knn.Run();
@@ -451,7 +511,7 @@ void Zestaw3()
 DWORD main(int argc, char* argv[])
 {
 	//Zestaw1();
-	Zestaw2();
+	//Zestaw2();
 	Zestaw3();
 
 

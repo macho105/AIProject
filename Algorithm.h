@@ -6,11 +6,13 @@ namespace AI
 
 	enum Type
 	{
+		kFirst,
 		kManhattan,
 		kEuclid,
 		kCanberr,
 		kChebyshev,
-		kPearson
+		kPearson,
+		kLast
 	};
 
 	class Algorithm

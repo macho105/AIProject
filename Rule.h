@@ -14,6 +14,7 @@ namespace AI
 		std::shared_ptr<Object>	  _object = nullptr;
 		Array<Attribute>		  _fragments;
 		float					  _decision;
+		int						  _support = 0;
 	public:
 		explicit Rule(Array<Attribute> attributes,
 			float decision,
@@ -30,5 +31,10 @@ namespace AI
 		static std::vector<std::vector<int>> comb(int size, int level);
 		Array<int> GetIndexesRuleCovers();
 		std::string Dump();
+		void IncreaseSupport() { _support++; }
+		void SetSupport(int val) { _support = val; }
+		int GetSupport() { return _support; }
+		bool operator==(Rule other);
+		int GetDecision() { return _decision; }
 	};
 }
